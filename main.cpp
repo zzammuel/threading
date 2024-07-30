@@ -34,16 +34,11 @@ int main(){
 
     CriticalData c1, c2;
 
-    auto starttime = chrono::high_resolution_clock::now();
-
-    thread t1(sleepOneSecond);
-    thread t2(sleepOneSecond);
+    thread t1([&]{deadLock(c1, c2);});
+    thread t2([&]{deadLock(c2, c1);});
 
     t1.join();
     t2.join();
 
-    auto endtime = chrono::high_resolution_clock::now();
-    auto duration = chrono::duration_cast<chrono::milliseconds>(endtime - starttime);
-
-    cout << duration.count() << endl;
+    cout << endl;
 }
