@@ -2,7 +2,6 @@
 #include <mutex>
 #include <iostream>
 #include <chrono>
-#include <unistd.h>
 
 using namespace std;
 
@@ -23,10 +22,6 @@ void deadLock(CriticalData& a, CriticalData& b){
 
     cout << "   Thread: " << this_thread::get_id() << " get both mutex" << endl;
     lock(guard1, guard2);
-}
-
-void sleepOneSecond(){
-    sleep(1);
 }
 
 int main(){
