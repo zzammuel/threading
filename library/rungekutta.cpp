@@ -20,6 +20,7 @@ u(n+1,j) = dt/dx * u(n,j-1)*u(n,j)
 #include <condition_variable>
 #include <mutex>
 #include <barrier>
+#include <fstream>
 
 #include "library.h"
 
@@ -69,9 +70,19 @@ void BurgersEquation::getSolution(int lb, int rb){
     }
 }
 
-void BurgersEquation::printTimePoint(int t){
-    for (auto elem : grid[t]){
-        cout << elem << ", ";
+void BurgersEquation::saveResults(){
+    fstream fs;
+    fs.open("output/Solution.csv", fstream::out);
+
+    double t = 0;
+
+    for (auto row : grid){
+        fs << t;
+        t += dt;
+        for (auto col : row){
+            fs << "," << col;
+        }
+        fs << endl;
     }
-    cout << endl;
+    fs.close();
 }

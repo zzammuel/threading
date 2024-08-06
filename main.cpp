@@ -17,5 +17,5 @@ int main(){
     t1.join();
     t2.join();
 
-    Beq.printTimePoint(10);
+    Beq.saveResults();
 }

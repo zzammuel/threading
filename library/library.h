@@ -19,7 +19,7 @@ class BurgersEquation{
         void nextTimeStep(int n, int lb, int rb);
 
         void getSolution(int lb, int rb);
-        void printTimePoint(int t);
+        void saveResults();
 
     private:
         int TCOUNT, XCOUNT, THREADCOUNT;

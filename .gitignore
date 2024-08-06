@@ -1,3 +1,10 @@
+# Files
+output/*.csv
+
+# Executables
 program
+
+# Folders
+/data/
 
 .vscode
