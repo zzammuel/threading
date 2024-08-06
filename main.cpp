@@ -16,8 +16,6 @@ int main(int argc, char *argv[]){
     const int NT = atoi(argv[2]);
     const int nthreads = atoi(argv[3]);
 
-    cout << NX << ", " << NT << ", " << nthreads << endl;
-
     BurgersEquation Beq = BurgersEquation(0.03, NX, NT);
     barrier sync_point(nthreads);
     auto glambda = [&](auto lb, auto rb){Beq.getSolution(lb, rb, sync_point);};

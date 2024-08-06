@@ -66,11 +66,6 @@ void BurgersEquation::getSolution(int lb, int rb, barrier<> &syncpoint){
     for (int t=0; t<TCOUNT; t++){
         nextTimeStep(t, lb, rb);
 
-        {
-            lock_guard<mutex> lck(coutMutex);
-            cout << "(" << lb << ", " << rb << ")" << endl;
-        }
-
         syncpoint.arrive_and_wait();
     }
 }
