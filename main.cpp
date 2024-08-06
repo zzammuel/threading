@@ -16,17 +16,20 @@ int main(int argc, char *argv[]){
     const int NT = atoi(argv[2]);
     const int nthreads = atoi(argv[3]);
 
-    BurgersEquation Beq = BurgersEquation(0.03, NX, NT);
+    cout << NX << ", " << NT << ", " << nthreads << endl;
 
+    BurgersEquation Beq = BurgersEquation(0.03, NX, NT);
     barrier sync_point(nthreads);
+    auto glambda = [&](auto lb, auto rb){Beq.getSolution(lb, rb, sync_point);};
 
     vector<thread> threads;
-    int lb, rb;
 
+    int lb, rb;
     for(int i=0; i<nthreads; i++){
         lb = NX / nthreads * i + 1;
         rb = NX / nthreads * (i + 1) + 1;
-        threads.emplace_back([&]{Beq.getSolution(lb, rb, sync_point);});
+        
+        threads.emplace_back(glambda, lb, rb);
     }
 
     for(auto& t : threads){

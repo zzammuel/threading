@@ -27,7 +27,7 @@ u(n+1,j) = dt/dx * u(n,j-1)*u(n,j)
 using namespace std;
 
 condition_variable condVar;
-mutex mutex_;
+mutex writeMutex, coutMutex;
 
 BurgersEquation::BurgersEquation(float nu, int nx, int nt){
     nu = nu;
@@ -39,9 +39,9 @@ BurgersEquation::BurgersEquation(float nu, int nx, int nt){
     }
 
     dt = 1.0 / (double) TCOUNT;
-    dx = numbers::pi / (double) XCOUNT;
+    dx = numbers::pi / (double) (XCOUNT+1);
 
-    for (int j=1; j<XCOUNT; j++){
+    for (int j=1; j<XCOUNT+1; j++){
         grid[0][j] = sin(dx * j);
     }
 };
@@ -54,13 +54,22 @@ void BurgersEquation::nextTimeStep(int n, int lb, int rb){
                         + (1 - 2*nu*dt/pow(dx,2)) * grid[n][j]
                         + nu * dt/pow(dx,2) * grid[n][j+1]
                         + nu * dt/pow(dx,2) * grid[n][j-1];
-        grid[n+1][j] = newval;
+
+        {
+            lock_guard<mutex> lck(writeMutex);
+            grid[n+1][j] = newval;
+        }
     }
 }
 
 void BurgersEquation::getSolution(int lb, int rb, barrier<> &syncpoint){
     for (int t=0; t<TCOUNT; t++){
         nextTimeStep(t, lb, rb);
+
+        {
+            lock_guard<mutex> lck(coutMutex);
+            cout << "(" << lb << ", " << rb << ")" << endl;
+        }
 
         syncpoint.arrive_and_wait();
     }
