@@ -3,7 +3,6 @@
 
 using namespace std;
 
-
 // deadlock_example.cpp
 struct CriticalData
 {
@@ -19,13 +18,11 @@ class BurgersEquation{
 
         void nextTimeStep(int n, int lb, int rb);
 
-        void getSolution(int threadnumber, int lb, int rb);
+        void getSolution(int lb, int rb);
         void printTimePoint(int t);
 
     private:
         int TCOUNT, XCOUNT, THREADCOUNT;
-        vector<bool> THREADSTATUS;
-        bool allDone();
 
         vector<vector<double>> grid;
         double nu, dt, dx;

@@ -1,5 +1,6 @@
 #include <thread>
 #include <iostream>
+#include <barrier>
 
 #include "library/library.h"
 
@@ -10,8 +11,8 @@ int main(){
 
     BurgersEquation Beq = BurgersEquation(0.03, 19, 10, 2);
 
-    thread t1([&]{Beq.getSolution(0, 1, 10);});
-    thread t2([&]{Beq.getSolution(1, 10, 19);});
+    thread t1([&]{Beq.getSolution(1, 10);});
+    thread t2([&]{Beq.getSolution(10, 19);});
 
     t1.join();
     t2.join();

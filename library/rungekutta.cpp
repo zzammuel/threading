@@ -19,10 +19,14 @@ u(n+1,j) = dt/dx * u(n,j-1)*u(n,j)
 #include <iostream>
 #include <condition_variable>
 #include <mutex>
+#include <barrier>
 
 #include "library.h"
 
 using namespace std;
+
+const int nthreads = 2;
+barrier syncpoint(nthreads);
 
 condition_variable condVar;
 mutex mutex_;
@@ -32,10 +36,6 @@ BurgersEquation::BurgersEquation(float nu, int nx, int nt, int nthread){
     XCOUNT = nx;
     TCOUNT = nt;
     THREADCOUNT = nthread;
-
-    for (int i=0; i<THREADCOUNT; i++){
-        THREADSTATUS.push_back(false);
-    }
 
     for (int t=0; t<TCOUNT+1;t++){
         grid.push_back(vector<double>(XCOUNT+1, 0.0));
@@ -61,15 +61,11 @@ void BurgersEquation::nextTimeStep(int n, int lb, int rb){
     }
 }
 
-void BurgersEquation::getSolution(int threadnumber, int lb, int rb){
+void BurgersEquation::getSolution(int lb, int rb){
     for (int t=0; t<TCOUNT; t++){
-        THREADSTATUS[threadnumber] = false;
         nextTimeStep(t, lb, rb);
-        THREADSTATUS[threadnumber] = true;
 
-        unique_lock<mutex> lck(mutex_);
-        condVar.notify_all();
-        condVar.wait(lck, allDone);
+        syncpoint.arrive_and_wait();
     }
 }
 
@@ -78,12 +74,4 @@ void BurgersEquation::printTimePoint(int t){
         cout << elem << ", ";
     }
     cout << endl;
-}
-
-bool BurgersEquation::allDone(){
-    bool done = true;
-    for (bool elem : THREADSTATUS){
-        done &= elem;
-    }
-    return done;
 }
