@@ -1,21 +1,37 @@
 #include <thread>
 #include <iostream>
 #include <barrier>
+#include <vector>
 
 #include "library/library.h"
 
 using namespace std;
 
-int main(){
-    cout << thread::hardware_concurrency() << endl << endl;
+int main(int argc, char *argv[]){
+    cout << "Number of arguments pass: " << argc << endl << endl;
 
-    BurgersEquation Beq = BurgersEquation(0.03, 19, 10, 2);
+    if (argc!=4){ return 0; }
 
-    thread t1([&]{Beq.getSolution(1, 10);});
-    thread t2([&]{Beq.getSolution(10, 19);});
+    const int NX = atoi(argv[1]);
+    const int NT = atoi(argv[2]);
+    const int nthreads = atoi(argv[3]);
 
-    t1.join();
-    t2.join();
+    BurgersEquation Beq = BurgersEquation(0.03, NX, NT);
+
+    barrier sync_point(nthreads);
+
+    vector<thread> threads;
+    int lb, rb;
+
+    for(int i=0; i<nthreads; i++){
+        lb = NX / nthreads * i + 1;
+        rb = NX / nthreads * (i + 1) + 1;
+        threads.emplace_back([&]{Beq.getSolution(lb, rb, sync_point);});
+    }
+
+    for(auto& t : threads){
+        t.join();
+    }
 
     Beq.saveResults();
 }

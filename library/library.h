@@ -14,11 +14,11 @@ void deadLock(CriticalData& a, CriticalData& b);
 // rungekutta.cpp
 class BurgersEquation{
     public:
-        BurgersEquation(float nu, int nx, int nt, int nthread);
+        BurgersEquation(float nu, int nx, int nt);
 
         void nextTimeStep(int n, int lb, int rb);
 
-        void getSolution(int lb, int rb);
+        void getSolution(int lb, int rb, barrier<> &syncpoint);
         void saveResults();
 
     private:
