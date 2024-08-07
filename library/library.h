@@ -11,7 +11,7 @@ struct CriticalData
 
 void deadLock(CriticalData& a, CriticalData& b);
 
-// rungekutta.cpp
+// burgers_equation.cpp
 class BurgersEquation{
     public:
         BurgersEquation(float nu, int nx, int nt);
